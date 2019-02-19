@@ -7,12 +7,11 @@ The metadata here is released under the Creative Commons Public Domain [CC0](htt
 
 ##Considerations
 * A **program** is defined as one or more performances or presentations in which the same **repertoire**, **conductors**, and **soloists** are EXACTLY the same (dates, times, locations may vary within). For example, if a soloist plays an encore one night but not another, the concert with the encore becomes a different program.
-* Only complete titles are included. If an excerpt or movement is performed, this will not be indicated in the database at this time. We are working to include this in the near future.
-* To see detailed information about our internal descriptive standards, please go to http://nyphil.org/history/performance-history/help.
+* ~~Only complete titles are included. If an excerpt or movement is performed, this will not be indicated in the database at this time. We are working to include this in the near future.~~ Movements are now included as cataloged by NYP. Keep in mind that we do not necessarily catalog every movement in the work, only movements that we have ever performed.
+* To see detailed information about our internal descriptive standards, please go to http://archives.nyphil.org/index.php/help-performancehistory.
 
 ##Repository Contents
-The data is currently available as XML only, though we hope to provide JSON in the future.
-In the *Programs* directory, you will find a series of XML files. The file called complete.xml contains every concert from December 7, 1842 to the present (it's possible that it could take up to a week for the latest program to be included). To allow for easier downloading and use, also available are segmented files determined by date ranges (each segment contains about 1,000 records).
+The data is currently available as both XML and JSON.  In the *Programs* directory, you will find two directories, `xml` and `json`, each with a series of XML. The file called complete.xml (and complete.json) contains every concert from December 7, 1842 to the present (it's possible that it could take up to a week for the latest program to be included). To allow for easier downloading and use, also available are segmented files determined by date ranges (each segment contains about 1,000 records).
 
 The XML is structured in the following way:
 
@@ -31,9 +30,10 @@ The XML is structured in the following way:
          <Time/>
       </concertInfo>
       <worksInfo> // a program will usually have multiple works 
-         <work>
+         <work ID=""> // e.g. "1234*1" - first part is the Work ID, second part is the NYP Movement ID
              <composerName/>
              <workTitle/>
+             <movement/>
              <conductorName/>     
              <soloists> // included only if there are listed soloists
                 <soloist>
@@ -48,6 +48,58 @@ The XML is structured in the following way:
    </program>
 </programs>
 ```
+
+The JSON is formatted almost the same, with a few small differences in
+naming:
+
+```
+{
+  "programs": [
+    {
+      "id": "38e072a7-8fc9-4f9a-8eac-3957905c0002", // GUID
+      "programID": "3853", // NYP Local ID
+      "orchestra": "New York Philharmonic",
+      "season": "1842-43",
+      "concerts": [
+        {
+           "eventType": "Subscription Season",
+           "Location": "Manhattan, NY",
+           "Venue": "Apollo Rooms",
+           "Date": "1842-12-07T05:00:00Z",
+           "Time": "8:00PM"
+        },
+        /* A program can have multiple concerts */
+      ],
+      "works": [
+        {
+          "ID": "8834*4", // e.g. "1234*1" - first part is the Work ID, second part is the NYP Movement ID
+          "composerName": "Weber,  Carl  Maria Von",
+          "workTitle": "OBERON",
+          "movement": "\"Ozean, du Ungeheuer\" (Ocean, thou mighty monster), Reiza (Scene and Aria), Act II",
+          "conductorName": "Timm, Henry C.",
+          "soloists": [
+            {
+              "soloistName": "Otto, Antoinette",
+              "soloistInstrument": "Soprano",
+              "soloistRoles": "S"
+            },
+            /* more soloists, if applicable. If no soloists, this will be an empty array */
+          ]
+        },
+        /* a program will usually have multiple works */
+        {
+          "ID": "0*",
+          "interval": "Intermission",
+          "soloists": []
+        },
+        /* Intermissions will also appear in the works array */
+      ]
+    },
+    /* more programs */
+  ]
+}
+```
+
 <table>
 	<tr>
 		<th>Field</th><th>Description</th>
@@ -62,7 +114,7 @@ The XML is structured in the following way:
 		<td>ProgramID</td><td>Local NYP ID</td>
 	</tr>
 	<tr>
-		<td>Orchestra</td><td>Full orchestra name <a href="http://nyphil.org/history/performance-history/help">Learn more...</a></td>
+		<td>Orchestra</td><td>Full orchestra name <a href="http://archives.nyphil.org/index.php/help-performancehistory">Learn more...</a></td>
 	</tr>
 	<tr>
 		<td>Season</td><td>Defined as Sep 1 - Aug 31, displayed "1842-43"</td>
@@ -71,7 +123,7 @@ The XML is structured in the following way:
 		<td colspan=2><strong>Concert Info: Repeated for each individual performance within a program</strong></td>
 	</tr>
 	<tr>
-		<td>eventType</td><td><a href="http://nyphil.org/history/performance-history/help">See term definitions</a></td>
+		<td>eventType</td><td><a href="http://archives.nyphil.org/index.php/help-performancehistory">See term definitions</a></td>
 	</tr>
 	<tr>
 		<td>Location</td><td>Geographic location of concert (Countries are identified by their current name. For example, even though the orchestra played in Czechoslovakia, it is now identified in the data as the Czech Republic)</td>
@@ -93,6 +145,9 @@ The XML is structured in the following way:
 	</tr>
 	<tr>
 		<td>worksComposerTitle</td><td>Composer Last name, first / TITLE (NYP short titles used)</td>
+	</tr>
+	<tr>
+		<td>movement</td><td>Movement title as cataloged by NYP</td>
 	</tr>
 	<tr>
 		<td>worksSoloistName</td><td>Last name, first name (if multiple soloists on a single work, delimited by semicolon)</td>
